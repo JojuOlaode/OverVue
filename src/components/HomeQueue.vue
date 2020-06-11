@@ -1,29 +1,32 @@
 <template>
-  <section class="home-queue" v-on:click="handleClick">
+  <section class="home-queue">
     <i v-if='this.activeLayer.id !== ""' class="fas fa fa-chevron-up fa-md" @click="setParentLayer"></i>
     <span class='list-title' v-if='this.activeLayer.id !== ""'> Viewing Elements in '{{ this.activeComponent }} {{ this.depth }}' </span>
     <span class='list-title' v-else-if='this.activeComponent !==""'> Viewing Elements in '{{ this.activeComponent }}' </span>
     <span class='list-title' v-else> Elements in Queue </span>
     <hr>
-    <draggable
-      v-model="renderList"
+    <div
       group="people"
       class="list-group"
-      ghost-class="ghost"
-      @start="drag = true"
-      @end="drag = false"
     >
-      <div :class="activeHTML === element[2] ? 'list-group-item-selected' : 'list-group-item'" @dblclick.self="setActiveElement(element)" v-for="(element) in renderList" :key="element[1] + Date.now()">
-        <i class="fas fa fa-angle-double-down fa-md" @click="setLayer({text: element[0], id: element[2]})"></i>
+
+      <div
+      :class="activeHTML === element[2] ? 'list-group-item-selected' : 'list-group-item'"
+      @dblclick.self="setActiveElement(element)"
+      v-for="(element) in renderList" :key="element[1] + Date.now()"
+      >
+        <!-- <i class="fas fa fa-angle-double-down fa-md" @click="setLayer({text: element[0], id: element[2]})"></i> -->
+        <i v-if='activeComponent === "" ' class="fas fa fa-angle-double-down fa-md" id="unavailable"></i>
+        <i v-else class="fas fa fa-angle-double-down fa-md" @click="setLayer({text: element[0], id: element[2]})"></i>
         {{ element[0] }}
         <i class="fas fa fa-trash fa-md" @click.self="deleteElement([element[1],element[2]])"></i>
       </div>
-    </draggable>
+
+    </div>
   </section>
 </template>
 
 <script>
-import draggable from 'vuedraggable'
 import { mapState, mapActions } from 'vuex'
 import { setSelectedElementList, deleteSelectedElement, deleteFromComponentHtmlList } from '../store/types'
 
@@ -87,7 +90,9 @@ export default {
       else this.$store.dispatch(deleteFromComponentHtmlList, id[1])
     },
     setActiveElement (element) {
-      this.setActiveHTML(element)
+      if (this.activeComponent !== '') {
+        this.setActiveHTML(element)
+      }
     },
     setLayer (element) {
       this.setActiveLayer(element)
@@ -105,16 +110,7 @@ export default {
         newTitle += ` > ${el}`
       })
       this.depth = newTitle
-    },
-    handleClick (event) {
-      console.log(event.target)
-      if (event.target.className === 'home-queue') {
-        if (!(this.activeHTML === '')) this.setActiveHTML([''])
-      }
     }
-  },
-  components: {
-    draggable
   },
   watch: {
     activeComponent: function () {
@@ -137,7 +133,7 @@ export default {
 
 <style lang="stylus" scoped>
 .home-queue {
-  height: 100%;
+  padding-bottom: 40px;
 }
 li {
   list-style-type: none;
@@ -149,6 +145,7 @@ li {
 .list-group-item {
   display: inline-block;
   margin: 2px 1.5%;
+  min-width: 175px;
   width: 30%;
   border-radius: 0.5cm;
   border: 2px solid $secondary;
@@ -161,6 +158,7 @@ li {
 .list-group-item-selected {
   display: inline-block;
   margin: 2px 1.5%;
+  min-width: 175px;
   width: 30%;
   border-radius: 0.5cm;
   border: 2px solid white;
@@ -177,12 +175,17 @@ li {
 
 .fa-trash {
   position: relative;
-  left: 20px;
-
+  // left: 20px;
+  top: 2px;
+  right: 35px;
+  float: right;
 }
 .fa-angle-double-down {
   position: relative;
-  right: 20px;
+  // right: 20px;
+  top: 2px;
+  left: 35px;
+  float: left;
 }
 
 .fa-angle-double-down:hover {
@@ -197,6 +200,11 @@ li {
 .fa-chevron-up:hover {
   cursor: pointer;
   color: #41B883;
+}
+
+#unavailable {
+  color: #686868;
+  cursor: default
 }
 
 hr {
