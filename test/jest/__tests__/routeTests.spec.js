@@ -27,7 +27,7 @@ import store from "../../../src/store/state/index";
  * `state:` routes, activeRoute, componentMap, imagePath
  */
 
-describe("Test Suite for Image Upload", () => {
+describe("Test Suite for route actions and related mutations", () => {
     const localVue = createLocalVue();
     localVue.use(Quasar, Vuex, { components });
     const state = { ...store }
@@ -80,11 +80,47 @@ describe("Test Suite for Image Upload", () => {
     });
 
     
-    test('"[types.ADD_ROUTE_TO_COMPONENT_MAP]" mutation to ---', () => {
-      mutations[types.ADD_ROUTE_TO_COMPONENT_MAP](state, { route: state.activeRoute , children: [] } )
+    test('"[types.ADD_ROUTE_TO_COMPONENT_MAP]" mutation to add route object containing 3 keys to state.componentMap', () => {
+      expect(Object.keys(state.componentMap).length).toBe(2);
+      mutations[types.ADD_ROUTE_TO_COMPONENT_MAP](state, { route: state.activeRoute , children: [] });
+      // console.log('post: ', state.componentMap)
+      expect(Object.keys(state.componentMap).length).toBe(3);
+      // to contain componentName, children, and htmlList keys
+      expect(Object.keys(state.componentMap[state.activeRoute])).toMatchObject([ 'componentName', 'children', 'htmlList' ])
+    });
+    
+    test('"[types.ADD_COMPONENT_TO_COMPONENT_CHILDREN]" mutation to add created route as one of Apps children', () => {
+      let component = 'App';
+      let value = state.componentMap[state.activeRoute].componentName;
+      // console.log('pre: ', state.componentMap[component].children);
+      expect(state.componentMap[component].children.length).toBe(1);
+      mutations[types.ADD_COMPONENT_TO_COMPONENT_CHILDREN](state, {component, value});
+      // console.log('post: ', state.componentMap[component].children);
+      expect(state.componentMap[component].children.length).toBe(2);
+      expect(state.componentMap[component].children[state.componentMap[component].children.length-1]).toBe(value);
+      
     });
     
     test('"[types.DELETE_ROUTE]" mutation to ---', () => {
+      const payload = 'testRoute';
+      let flag = false;
+      // pre mutation tests
+      expect(state.routes[payload]).not.toBe(undefined)
+      expect(state.componentMap[payload]).not.toBe(undefined)
+      expect(state.imagePath[payload]).not.toBe(undefined)
+      if (state.activeRoute === payload) {
+        // console.log(state.activeRoute)
+        flag = true;
+      }
+      mutations[types.DELETE_ROUTE](state, payload);
+
+      // post mutation tests
+      expect(state.routes[payload]).toBe(undefined)
+      expect(state.componentMap[payload]).toBe(undefined)
+      expect(state.imagePath[payload]).toBe(undefined)
+      if (flag) {
+        expect(state.activeRoute).not.toBe(payload)
+      }
       
     });
     

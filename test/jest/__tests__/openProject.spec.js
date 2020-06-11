@@ -58,7 +58,7 @@ describe("Test Suite for Image Upload", () => {
         expect(commit).toHaveBeenCalledWith("SET_ROUTES", payload.routes);
       });
     
-    test('"[types.SET_IMAGE_PATH]" mutation add payload to imagePath object in state', ()=>{
+    test('"[types.SET_IMAGE_PATH]" mutation expect add payload to imagePath object in state', ()=>{
         const openState = {
             imagePath: {
                 HomeView: '',
@@ -69,7 +69,7 @@ describe("Test Suite for Image Upload", () => {
         // console.log(openState.imagePath, { ...openState.imagePath, ... payload.imagePath})
         expect(openState.imagePath).toMatchObject({ ...openState.imagePath, ... payload.imagePath});
     });
-    test('"[types.SET_COMPONENT_MAP]" expect state.componentMap object to match payload.componentMap', ()=>{
+    test('"[types.SET_COMPONENT_MAP]" mutation expect state.componentMap object to match payload.componentMap', ()=>{
         const openState = {
             componentMap: {
                 App: {
@@ -88,7 +88,7 @@ describe("Test Suite for Image Upload", () => {
         mutations[types.SET_COMPONENT_MAP](openState, payload.componentMap);
         expect(openState.componentMap).toMatchObject(payload.componentMap);
     });
-    test('"[types.SET_ROUTES]" expect state.routes object to match payload.routes ', ()=>{
+    test('"[types.SET_ROUTES]" mutation expect state.routes object to match payload.routes ', ()=>{
         const openState = {
             routes: {
                 HomeView: []
